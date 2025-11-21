@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csu.productservice.mapper.ItemMapper">
+    <delete id="deleteById">
+        DELETE FROM item
+        WHERE itemid = #{itemId}
+    </delete>
+    <resultMap id="itemResultMap" type="Item">
+        <result property="name" column="name"/>
+        <result property="itemId" column="itemid"/>
+        <result property="productId" column="productid"/>
+        <result property="price" column="price"/>
+        <result property="description" column="descn"/>
+        <result property="image" column="image"/>
+        <result property="stock" column="stock"/>
+    </resultMap>
+    <select id="selectListByKeyWords" resultMap="itemResultMap">
+        SELECT name, itemid, productid, price, descn, image,stock FROM item
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="selectByProduct" resultMap="itemResultMap">
+        SELECT name, itemid, productid, price, descn, image,stock FROM item
+        WHERE productid=#{productId}
+    </select>
+    <select id="getItemById" resultMap="itemResultMap" parameterType="String">
+        SELECT name, itemid, productid, price, descn, image,stock
+        FROM item
+        WHERE itemid = #{value}
+    </select>
+</mapper>
