@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.csu.userservice.mapper.AccountDao">
+
+    <!-- 注册邮箱账号 -->
+    <insert id="insertEmailAccount">
+        INSERT INTO account (username, password, email)
+        VALUES (#{username}, #{password}, #{email})
+    </insert>
+
+    <!-- GitHub 注册：插入 account 表 -->
+    <insert id="insertGithubAccount"
+            parameterType="com.csu.userservice.entity.Account"
+            useGeneratedKeys="true"
+            keyProperty="userid">
+        INSERT INTO account (username, email)
+        VALUES (#{username}, #{email})
+    </insert>
+
+    <!-- GitHub 注册：插入 github_account 表 -->
+    <insert id="insertGithub">
+        INSERT INTO github_account (userid, github_id, github_login)
+        VALUES (#{userid}, #{github_id}, #{github_login})
+    </insert>
+
+    <!-- GitHub 登录 -->
+    <select id="searchGithubAccount"
+            resultType="com.csu.userservice.entity.Account">
+        SELECT *
+        FROM account a
+                 JOIN github_account g ON a.userid = g.userid
+        WHERE g.github_id = #{github_id}
+    </select>
+
+    <!-- 登录 -->
+    <select id="login"
+            resultType="com.csu.userservice.entity.Account">
+        SELECT *
+        FROM account
+        WHERE email = #{email}
+          AND password = #{password}
+    </select>
+
+    <!-- 根据 userid 查询用户 -->
+    <select id="getAccountById"
+            resultType="com.csu.userservice.entity.Account">
+        SELECT *
+        FROM account
+        WHERE userid = #{userid}
+    </select>
+
+    <!-- 根据 email 查询用户 -->
+    <select id="getAccountByEmail"
+            resultType="com.csu.userservice.entity.Account">
+        SELECT *
+        FROM account
+        WHERE email = #{email}
+    </select>
+
+    <!-- 更新资料 -->
+    <update id="updateAccount"
+            parameterType="com.csu.userservice.entity.Account">
+        UPDATE account
+        SET username = #{username},
+            phone = #{phone},
+            gender = #{gender},
+            age = #{age},
+            addr1 = #{addr1},
+            addr2 = #{addr2},
+            avatar_url = #{avatar_url}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 修改邮箱 -->
+    <update id="resetEmail">
+        UPDATE account
+        SET email = #{newEmail}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 修改密码 -->
+    <update id="resetPassword">
+        UPDATE account
+        SET password = #{newPassword}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 更新 VIP -->
+    <update id="updateAccountVIP"
+            parameterType="com.csu.userservice.entity.Account">
+        UPDATE account
+        SET VIPLevel = #{VIPLevel}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 设置头像 -->
+    <update id="setAvatar">
+        UPDATE account
+        SET avatar_url = #{avatar_url}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 设置登录类型 -->
+    <update id="setLoginType">
+        UPDATE account
+        SET login_type = #{login_type}
+        WHERE userid = #{userid}
+    </update>
+
+    <!-- 更新 Token Version -->
+    <update id="updateTokenVersion">
+        UPDATE account
+        SET token_version = #{token_version}
+        WHERE userid = #{userid}
+    </update>
+
+</mapper>
