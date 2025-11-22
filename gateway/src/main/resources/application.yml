@@ -31,6 +31,12 @@ spring:
           predicates:
             - Path=/api/orders/**
 
+        # 统计分析服务路由
+        - id: analytics-service
+          uri: lb://analytics-service
+          predicates:
+            - Path=/api/analytics/**
+
       # 启用服务发现路由
       discovery:
         locator:
