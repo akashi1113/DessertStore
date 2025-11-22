@@ -17,4 +17,6 @@ public class Item {
     private String description;
 
     private int stock;
+
+
 }

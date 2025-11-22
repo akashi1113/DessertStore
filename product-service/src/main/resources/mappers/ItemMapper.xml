@@ -3,10 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csu.productservice.mapper.ItemMapper">
-    <delete id="deleteById">
-        DELETE FROM item
-        WHERE itemid = #{itemId}
-    </delete>
+
+    <!-- 结果映射 -->
     <resultMap id="itemResultMap" type="Item">
         <result property="name" column="name"/>
         <result property="itemId" column="itemid"/>
@@ -16,18 +14,84 @@
         <result property="image" column="image"/>
         <result property="stock" column="stock"/>
     </resultMap>
-    <select id="selectListByKeyWords" resultMap="itemResultMap">
-        SELECT name, itemid, productid, price, descn, image,stock FROM item
-        WHERE name LIKE CONCAT('%', #{keyword}, '%')
-    </select>
 
-    <select id="selectByProduct" resultMap="itemResultMap">
-        SELECT name, itemid, productid, price, descn, image,stock FROM item
-        WHERE productid=#{productId}
-    </select>
+    <!-- ========================================
+         原有查询方法
+    ======================================== -->
+
+    <!-- 根据ID查询商品项 -->
     <select id="getItemById" resultMap="itemResultMap" parameterType="String">
-        SELECT name, itemid, productid, price, descn, image,stock
+        SELECT name, itemid, productid, price, descn, image, stock
         FROM item
         WHERE itemid = #{value}
     </select>
+
+    <!-- 根据商品ID查询商品项列表 -->
+    <select id="selectByProduct" resultMap="itemResultMap">
+        SELECT name, itemid, productid, price, descn, image, stock
+        FROM item
+        WHERE productid = #{productId}
+    </select>
+
+    <!-- 根据关键词搜索 -->
+    <select id="selectListByKeyWords" resultMap="itemResultMap">
+        SELECT name, itemid, productid, price, descn, image, stock
+        FROM item
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <!-- ========================================
+         原有删除方法
+    ======================================== -->
+
+    <!-- 根据ID删除商品项 -->
+    <delete id="deleteById">
+        DELETE FROM item
+        WHERE itemid = #{itemId}
+    </delete>
+
+    <!-- 扣减库存（使用乐观锁防止超卖） -->
+    <update id="reduceStock">
+        UPDATE item
+        SET stock = stock - #{quantity}
+        WHERE itemid = #{itemId}
+          AND stock >= #{quantity}
+    </update>
+
+    <!-- 增加库存（订单取消时回滚） -->
+    <update id="increaseStock">
+        UPDATE item
+        SET stock = stock + #{quantity}
+        WHERE itemid = #{itemId}
+    </update>
+
+    <!-- 批量查询商品项 -->
+    <select id="selectByIds" resultMap="itemResultMap">
+        SELECT name, itemid, productid, price, descn, image, stock
+        FROM item
+        WHERE itemid IN
+        <foreach collection="itemIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 更新商品项信息 -->
+    <update id="updateItem" parameterType="Item">
+        UPDATE item
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="description != null">descn = #{description},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="stock != null">stock = #{stock},</if>
+        </set>
+        WHERE itemid = #{itemId}
+    </update>
+
+    <!-- 插入商品项 -->
+    <insert id="insertItem" parameterType="Item">
+        INSERT INTO item (itemid, productid, name, price, descn, image, stock)
+        VALUES (#{itemId}, #{productId}, #{name}, #{price}, #{description}, #{image}, #{stock})
+    </insert>
+
 </mapper>
