@@ -130,27 +130,41 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         ProductAnalyticsDTO dto = new ProductAnalyticsDTO();
 
         try {
-            Map<String, Object> categoryResponse = productServiceClient.getCategoryList();
-            if ("SUCCESS".equals(categoryResponse.get("status"))) {
-                List<Map<String, Object>> categories = (List<Map<String, Object>>) categoryResponse.get("data");
-                dto.setTotalCategories(categories.size());
+            // ✅ 改用新的 Feign 接口
+            List<Map<String, Object>> categories = productServiceClient.getAllCategories();
+            dto.setTotalCategories(categories.size());
 
-                int totalProducts = 0;
-                for (Map<String, Object> category : categories) {
-                    String categoryId = category.get("categoryid").toString();
-                    Map<String, Object> productResponse = productServiceClient.getProductListByCategory(categoryId);
-                    if ("SUCCESS".equals(productResponse.get("status"))) {
-                        List<Map<String, Object>> products = (List<Map<String, Object>>) productResponse.get("data");
-                        totalProducts += products.size();
-                    }
-                }
-                dto.setTotalProducts(totalProducts);
+            int totalProducts = 0;
+            List<ProductAnalyticsDTO.TopProductDTO> topProducts = new ArrayList<>();
+
+            for (Map<String, Object> category : categories) {
+                String categoryId = (String) category.get("categoryId");
+
+                // ✅ 改用新的 Feign 接口
+                List<Map<String, Object>> products = productServiceClient.getProductsByCategory(categoryId);
+                totalProducts += products.size();
+
+                // 取前3个商品作为"热销商品"
+                products.stream()
+                        .limit(3)
+                        .forEach(product -> {
+                            ProductAnalyticsDTO.TopProductDTO topProduct = new ProductAnalyticsDTO.TopProductDTO();
+                            topProduct.setProductId((String) product.get("productId"));
+                            topProduct.setProductName((String) product.get("name"));
+                            // 从销售数据中获取销量，这里暂时设为 0
+                            topProduct.setSalesCount(0);
+                            topProducts.add(topProduct);
+                        });
             }
 
-            dto.setTopProducts(new ArrayList<>());
+            dto.setTotalProducts(totalProducts);
+            dto.setTopProducts(topProducts.stream().limit(10).collect(Collectors.toList()));
 
         } catch (Exception e) {
             log.error("获取商品分析失败", e);
+            dto.setTotalProducts(0);
+            dto.setTotalCategories(0);
+            dto.setTopProducts(new ArrayList<>());
         }
 
         return dto;
@@ -165,4 +179,3 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         return dto;
     }
 }
-
