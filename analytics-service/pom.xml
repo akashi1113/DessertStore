@@ -35,6 +35,12 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <!-- LoadBalancer 负载均衡（Feign必须依赖这个） -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <!-- MySQL驱动 -->
         <dependency>
             <groupId>mysql</groupId>
@@ -51,6 +57,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
             <optional>true</optional>
         </dependency>
 
