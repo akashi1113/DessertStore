@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csu.orderservice.mapper.CartDao">
+    <resultMap id="cartResultMap" type="com.csu.orderservice.domain.po.Cart">
+        <id property="cartId" column="cartid" />
+        <result property="userId" column="userid"/>
+        <result property="subTotal" column="subTotal" />
+        <result property="totalQuantity" column="totalQuantity"/>
+        <collection property="items" ofType="com.csu.orderservice.domain.po.CartItem">
+            <result property="cartId" column="cartid" />
+            <result property="itemId" column="itemid" />
+            <result property="quantity" column="quantity" />
+            <result property="totalPrice" column="totalPrice" />
+            <result property="price" column="price" />
+        </collection>
+    </resultMap>
+
+    <!-- 示例：联合查询 Cart 与 CartItem 表 -->
+    <select id="SelectOrderToConfirmByUserId" parameterType="Long" resultMap="cartResultMap">
+        SELECT c.cartid, c.userid, c.subTotal, c.totalQuantity,
+               ci.itemid, ci.quantity, ci.totalPrice, ci.price
+        FROM Cart c
+                 LEFT JOIN CartItem ci ON c.cartid = ci.cartid
+        WHERE c.userid = #{userId}
+    </select>
+
+    <select id="selectCartByUserId" parameterType="Long" resultMap="cartResultMap">
+        SELECT
+             cart.cartid,
+             cart.subTotal,
+             cart.totalQuantity,
+            cartitem.itemid,
+            cartitem.quantity,
+            cartitem.totalPrice
+        FROM
+            cart
+        LEFT JOIN
+            cartitem ON cart.cartid = cartitem.cartid
+        WHERE
+            userid = #{userId}
+    </select>
+
+    <insert id="insertCart" useGeneratedKeys="true" keyProperty="cartId">
+        INSERT INTO cart (userid, subTotal, totalQuantity)
+        VALUES (#{userId}, #{subTotal}, #{totalQuantity})
+    </insert>
+
+    <update id="updateCart">
+        UPDATE cart
+        SET subTotal = #{subTotal},
+            totalQuantity = #{totalQuantity}
+        WHERE cartid = #{cartId}
+    </update>
+</mapper>

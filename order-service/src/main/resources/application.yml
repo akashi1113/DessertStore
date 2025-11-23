@@ -8,9 +8,9 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/dessert
-    username: root
-    password: your_password
+    url: jdbc:mysql://127.0.0.1:3306/bakery-order
+    username: IzumiYuu
+    password:
 
   # Nacos配置
   cloud:
@@ -22,7 +22,7 @@ spring:
 
 # MyBatis Plus配置
 mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mappers/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.csu.orderservice.mapper.OrderDao">
+
+    <resultMap id="orderResultMap" type="com.csu.orderservice.domain.po.Order">
+        <id property="orderId" column="orderid" />
+        <result property="userId" column="userid" />
+        <result property="orderDate" column="orderdate" />
+        <result property="shippingAddress1" column="shippingAddress1" />
+        <result property="shippingAddress2" column="shippingAddress2" />
+        <result property="shippingCost" column="shippingCost" />
+        <result property="tax" column="tax" />
+        <result property="grandTotal" column="grandTotal" />
+        <result property="firstName" column="firstname" />
+        <result property="lastName" column="lastname" />
+        <result property="phone" column="phone" />
+        <result property="city" column="city" />
+        <result property="subTotal" column="subTotal" />
+        <collection property="lineItems" ofType="com.csu.orderservice.domain.po.LineItem">
+            <result property="orderId" column="orderid" />
+            <result property="cartId" column="cartid" />
+            <result property="itemId" column="itemid" />
+            <result property="quantity" column="quantity" />
+            <result property="totalPrice" column="totalPrice" />
+        </collection>
+    </resultMap>
+        <resultMap id="lineItemResultMap" type="com.csu.orderservice.domain.po.LineItem">
+            <result property="orderId" column="orderid" />
+            <result property="cartId" column="cartid" />
+            <result property="quantity" column="quantity" />
+            <result property="itemId" column="itemid" />
+            <result property="totalPrice" column="totalPrice" />
+        </resultMap>
+
+    <!-- 插入订单数据，使用 useGeneratedKeys 自动回写订单ID -->
+    <!-- 插入 order 表数据 -->
+    <insert id="insertOrder" parameterType="com.csu.orderservice.domain.po.Order" useGeneratedKeys="true" keyProperty="orderId" keyColumn="orderid">
+        INSERT INTO `order` (
+            orderdate, shippingAddress1, shippingAddress2, shippingCost,
+            tax, grandTotal, firstname, lastname, phone, city, subTotal, userid
+        )
+        VALUES (
+            #{orderDate}, #{shippingAddress1}, #{shippingAddress2}, #{shippingCost},
+            #{tax}, #{grandTotal}, #{firstName}, #{lastName}, #{phone}, #{city}, #{subTotal}, #{userId}
+        )
+    </insert>
+
+    <insert id="insertLineItems" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=",">
+            INSERT INTO lineitem (
+                orderid, cartid, itemid, quantity, totalPrice
+            )
+            VALUES (
+                #{item.orderId}, #{item.cartId}, #{item.itemId}, #{item.quantity}, #{item.totalPrice}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectOrderInfo" parameterType="Long" resultType="com.csu.orderservice.domain.po.OrderInfo">
+        SELECT
+            orderid,
+            orderdate,
+            grandTotal
+        FROM
+            `order`
+        WHERE
+            orderid = #{orderId}
+    </select>
+    <!-- 根据用户ID查询订单列表 -->
+    <select id="selectOrdersByUserId" parameterType="Long" resultMap="orderResultMap">
+        SELECT
+            `order`.orderid,
+            `order`.orderdate,
+            `order`.grandTotal
+        FROM
+            `order`
+        WHERE
+            `order`.userid = #{userId}
+        ORDER BY
+            `order`.orderdate DESC
+    </select>
+
+    <!-- 根据订单ID查询订单详情 -->
+    <select id="selectOrderByOrderId" parameterType="Long" resultMap="orderResultMap">
+        SELECT
+            `order`.orderid,
+            `order`.orderdate,
+            `order`.firstname,
+            `order`.lastname,
+            `order`.shippingAddress1,
+            `order`.shippingAddress2,
+            `order`.phone,
+            `order`.city,
+            `order`.grandTotal,
+            lineitem.itemid,
+            lineitem.quantity,
+            lineitem.totalPrice
+        FROM
+            `order`
+        JOIN
+            lineitem ON `order`.orderid = lineitem.orderid
+        WHERE
+            `order`.orderid = #{orderId}
+    </select>
+
+
+        <!-- 根据订单ID查询对应的订单项 -->
+        <select id="selectLineItemsByOrderId" parameterType="Long" resultMap="lineItemResultMap">
+            SELECT * FROM lineitem WHERE orderid = #{orderId}
+        </select>
+</mapper>

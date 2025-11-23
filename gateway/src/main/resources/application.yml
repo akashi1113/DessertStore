@@ -11,6 +11,22 @@ spring:
         server-addr: localhost:8848
 
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - http://localhost:5173
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+            allowCredentials: true
       # 路由配置
       routes:
         # 用户服务路由
@@ -33,6 +49,16 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+
+        # 购物车路由（订单服务提供）
+        - id: cart-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - StripPrefix=1
 
         # 统计分析服务路由
         - id: analytics-service

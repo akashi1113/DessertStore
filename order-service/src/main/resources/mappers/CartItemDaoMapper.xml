@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csu.orderservice.mapper.CartItemDao">
+    <resultMap id="cartResultMap" type="com.csu.orderservice.domain.po.CartItem">
+        <result property="cartId" column="cartid" />
+        <result property="itemId" column="itemid" />
+        <result property="quantity" column="quantity" />
+        <result property="totalPrice" column="totalPrice" />
+        <result property="price" column="price" />
+    </resultMap>
+
+    <select id="selectCartItemsByCartId" parameterType="Long" resultMap="cartResultMap">
+        SELECT cartid, itemid, quantity, totalPrice, price
+        FROM cartitem
+        WHERE cartid = #{cartId}
+    </select>
+
+    <update id="updateCartItem" parameterType="com.csu.orderservice.domain.po.CartItem">
+        UPDATE cartitem
+        SET quantity = #{quantity},
+            totalPrice = #{totalPrice}
+        WHERE cartid = #{cartId} AND itemid = #{itemId}
+    </update>
+
+    <insert id="insertCartItem" parameterType="com.csu.orderservice.domain.po.CartItem">
+        INSERT INTO cartitem (cartid, itemid, quantity, totalPrice, price)
+        VALUES (#{cartId}, #{itemId}, #{quantity}, #{totalPrice}, #{price})
+    </insert>
+
+    <delete id="deleteCartItemByCartIdAndItemId" parameterType="com.csu.orderservice.domain.po.CartItem">
+        DELETE FROM cartitem
+        WHERE cartid = #{cartId} AND itemid = #{itemId}
+    </delete>
+
+    <select id="selectCartItemByCartIdAndItemId" parameterType="com.csu.orderservice.domain.po.CartItem" resultMap="cartResultMap">
+        SELECT cartid,itemid,quantity,totalPrice,price
+        FROM cartitem
+        WHERE cartid = #{cartId} AND itemid = #{itemId}
+    </select>
+
+    <delete id="deleteCartItemsByCartId" parameterType="Long">
+        DELETE FROM cartitem
+        WHERE cartid = #{cartId}
+    </delete>
+</mapper>
