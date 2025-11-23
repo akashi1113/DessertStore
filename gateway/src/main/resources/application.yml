@@ -18,6 +18,9 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
+          filters:
+            # 去掉 /api/users 两级前缀 → 转发到 /accounts 或 /auth
+            - StripPrefix=2
 
         # 商品服务路由
         - id: product-service-route
@@ -30,6 +33,12 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
+
+        # 统计分析服务路由
+        - id: analytics-service
+          uri: lb://analytics-service
+          predicates:
+            - Path=/api/analytics/**
 
       # 启用服务发现路由
       discovery:

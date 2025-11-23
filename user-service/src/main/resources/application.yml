@@ -5,14 +5,12 @@ spring:
   application:
     name: user-service
 
-  # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/dessert
+    url: jdbc:mysql://127.0.0.1:3306/dessert_user?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: your_password
+    password: q18834366303
 
-  # Nacos配置
   cloud:
     nacos:
       discovery:
@@ -20,16 +18,21 @@ spring:
         namespace: public
         group: DEFAULT_GROUP
 
-# MyBatis Plus配置
-mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.csu.userservice.entity
   configuration:
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    db-config:
-      id-type: auto
 
-# 日志配置
 logging:
   level:
-    com.example.userservice: debug
+    com.csu.userservice: debug
+
+oss:
+  endpoint: ${ALIBABA_CLOUD_ENDPOINT}
+  accessKeyId: ${ALIBABA_CLOUD_ACCESS_KEY_ID}
+  accessKeySecret: ${ALIBABA_CLOUD_ACCESS_KEY_SECRET}
+  bucketName: ${ALIBABA_CLOUD_BUCKET_NAME}
+
+

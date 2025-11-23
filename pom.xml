@@ -21,6 +21,7 @@
 		<module>product-service</module>
 		<module>order-service</module>
 		<module>gateway</module>
+		<module>analytics-service</module>
 	</modules>
 
 	<!-- Spring Boot 父依赖 -->
