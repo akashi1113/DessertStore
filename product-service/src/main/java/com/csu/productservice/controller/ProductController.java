@@ -17,21 +17,20 @@ import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/product/")
+@RequestMapping("/api/products/")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping("products/{id}")
-    @ResponseBody
-    public CommodityResponse<List<Product>> getProductListByCategory(@PathVariable("id") String categoryId){
+    @GetMapping
+    public CommodityResponse<List<Product>> getProductListByCategory(
+            @RequestParam String categoryId) {
         return productService.getProductListByCategory(categoryId);
     }
 
-    @GetMapping("{id}")
-    @ResponseBody
-    public CommodityResponse<Product> getProduct(@PathVariable("id") String productId){
+    @GetMapping("/{id}")
+    public CommodityResponse<Product> getProduct(@PathVariable("id") String productId) {
         return productService.getProduct(productId);
     }
 }

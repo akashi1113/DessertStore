@@ -18,21 +18,19 @@ import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/category/")
+@RequestMapping("/api/categories")
 public class CategoryController {
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("categories")
-    @ResponseBody
+    @GetMapping
     public CommodityResponse<List<Category>> getCategoryList(){
         return categoryService.getCategoryList();
     }
 
-    @GetMapping("{id}")
-    @ResponseBody
+    @GetMapping("/{id}")
     public CommodityResponse<Category> getCategory(@PathVariable("id") String categoryId){
         return categoryService.getById(categoryId);
     }

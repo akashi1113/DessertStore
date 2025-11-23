@@ -23,7 +23,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/item/")
+@RequestMapping("/api/items")
 public class ItemController {
     @Autowired
     private CategoryService categoryService;
@@ -36,20 +36,18 @@ public class ItemController {
 //    @Autowired
 //    private JwtUtil jwtUtil;
 
-    @GetMapping("items/{id}")
-    @ResponseBody
-    public CommodityResponse<List<Item>> getItemListByProduct(@PathVariable("id") String productId){
+    @GetMapping
+    public CommodityResponse<List<Item>> getItemListByProduct(
+            @RequestParam String productId) {
         return itemService.getItemListByProduct(productId);
     }
 
-    @GetMapping("{id}")
-    @ResponseBody
-    public CommodityResponse<Item> getItem(@PathVariable("id") String itemId){
+    @GetMapping("/{id}")
+    public CommodityResponse<Item> getItem(@PathVariable("id") String itemId) {
         return itemService.searchItem(itemId);
     }
 
-    @GetMapping("{id}/reviews")
-    @ResponseBody
+    @GetMapping("/{id}/reviews")
     public ResponseEntity<List<Review>> getItemReviews(@PathVariable("id") String itemId) {
         List<Review> reviews = reviewService.getReviewsByItem(itemId);
         return ResponseEntity.ok(reviews);
@@ -93,9 +91,8 @@ public class ItemController {
 //        return ResponseEntity.ok(AccountResponse.success(AccountResponseCode.SUCCESS, review));
 //    }
 
-    @GetMapping("search")
-    @ResponseBody
-    public CommodityResponse<List<Item>> searchItem(String keywords){
+    @GetMapping("/search")
+    public CommodityResponse<List<Item>> searchItem(@RequestParam String keywords) {
         return itemService.searchItemByKeywords(keywords);
     }
 
