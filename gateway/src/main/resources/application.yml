@@ -26,7 +26,7 @@ spring:
         - id: product-service-route
           uri: lb://product-service
           predicates:
-            - Path=/api/categories/**, /api/products/**, /api/items/**
+            - Path=/api/categories/**, /api/products/**, /api/items/**, /feign/**
 
         # 订单服务路由
         - id: order-service-route
